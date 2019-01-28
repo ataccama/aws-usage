@@ -1,0 +1,26 @@
+[s3]
+# The only option that needs setting is the name of the bucket in which 
+# the billing reports are located. Generally, you'll also need to adjust
+# the prefix under which they are put.
+# This should be the prefix that has one or more directories with
+# date range names like "20181201-20190101"
+bucket = "billing"
+prefix = "reports"
+# To set up other AWS options, use aws-sdk-go's configuration parameters,
+# as documented at https://docs.aws.amazon.com/sdk-for-go/api/aws/session/
+# in Environment Variables section
+
+[es]
+# The elasticsearch server the application should connect to. Specifying one
+# is enough, the client automatically detects and monitors cluster members 
+# and creates connections to them.
+server = "http://localhost:9200"
+# Each monthly report is saved into a separate index. All the indices will 
+# have this prefix in their names.
+report_index_prefix = "billing"
+# aws-usage needs to store IDs of most recent reports for each month to
+# avoid recreating indices on every run. This is the name of the index 
+# that they will be stored in.
+metadata_index = "aws-usage-metadata"
+# When bulk indexing CSVs, a specified number of indexing workers is created
+indexing_workes = 2
