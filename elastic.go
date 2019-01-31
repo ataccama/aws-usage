@@ -114,25 +114,25 @@ func CreateMetadataIndex(ctx context.Context, client *elastic.Client) error {
 	return err
 }
 
-// GetReportIDForPeriod gets the ID of the last report for the given period from
+// GetAssemblyIDForPeriod gets the ID of the last assembly for the given period from
 // metadata index. If no ID is stored yet, it returns an empty string.
-func GetReportIDForPeriod(ctx context.Context, period string, client *elastic.Client) (string, error) {
+func GetAssemblyIDForPeriod(ctx context.Context, period string, client *elastic.Client) (string, error) {
 	index := viper.GetString("es.metadata_index")
-	doc, err := client.Get().Index(index).Id(period).StoredFields("report_id").Do(ctx)
+	doc, err := client.Get().Index(index).Id(period).StoredFields("assembly_id").Do(ctx)
 	if err != nil && !elastic.IsNotFound(err) {
 		return "", err
 	}
 	if elastic.IsNotFound(err) {
 		return "", nil
 	}
-	return doc.Fields["report_id"].([]interface{})[0].(string), nil
+	return doc.Fields["assembly_id"].([]interface{})[0].(string), nil
 }
 
-// SetReportIDForPeriod overwrites the report ID for the given period in metadata index.
-func SetReportIDForPeriod(ctx context.Context, period string, id string, client *elastic.Client) error {
+// SetAssemblyIDForPeriod overwrites the assembly ID for the given period in metadata index.
+func SetAssemblyIDForPeriod(ctx context.Context, period string, id string, client *elastic.Client) error {
 	index := viper.GetString("es.metadata_index")
 	_, err := client.Index().Id(period).Index(index).Type("_doc").BodyJson(map[string]string{
-		"report_id":   id,
+		"assembly_id": id,
 		"last_update": time.Now().Format(time.RFC3339),
 	}).Do(ctx)
 	return err
@@ -147,7 +147,7 @@ const metadataIndexBody = `{
 	"mappings": {
 		"_doc": {
 			"properties": {
-				"report_id": {"type": "text", "store": true},
+				"assembly_id": {"type": "text", "store": true},
 				"last_update": {"type": "date"}
 			}
 		}

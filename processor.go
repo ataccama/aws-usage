@@ -20,12 +20,12 @@ func ProcessPeriod(ctx context.Context, period string, esClient *elastic.Client,
 		logProcessingError(err, period, "Couldn't download manifest")
 		return
 	}
-	lastReport, err := GetReportIDForPeriod(ctx, period, esClient)
+	lastAssembly, err := GetAssemblyIDForPeriod(ctx, period, esClient)
 	if err != nil {
 		logProcessingError(err, period, "Couldn't get previous report ID")
 		return
 	}
-	if lastReport == m.ReportID {
+	if lastAssembly == m.AssemblyID {
 		log.WithField("period", period).Infof("No new data for period")
 		return
 	}
@@ -49,7 +49,7 @@ func ProcessPeriod(ctx context.Context, period string, esClient *elastic.Client,
 		}(csv)
 	}
 	indexingWg.Wait()
-	err = SetReportIDForPeriod(ctx, period, m.ReportID, esClient)
+	err = SetAssemblyIDForPeriod(ctx, period, m.AssemblyID, esClient)
 	if err != nil {
 		logProcessingError(err, period, "Couldn't set report ID")
 		return
