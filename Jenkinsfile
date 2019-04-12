@@ -29,10 +29,6 @@ pipeline {
         ])
       }
     }
-    stage('Patch') {
-      when { not { environment name: 'DIFF_ID', value: '' } }
-      steps { sh "arc patch --nocommit --nobranch --diff ${DIFF_ID}" }
-    }
     stage('Build image') {
       steps {
         script {
